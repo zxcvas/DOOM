@@ -1,0 +1,11 @@
+---
+description: Keep Doom's software renderer and paletted framebuffer intact during the browser port
+globs: linuxdoom-1.10/r_*.c,linuxdoom-1.10/r_*.h,linuxdoom-1.10/v_video.c,linuxdoom-1.10/v_video.h
+alwaysApply: false
+---
+
+Do not rewrite the software renderer to add browser or post-process features.
+Pixels come from `screens[0]` (320×200 palette indices) and `PLAYPAL`.
+Modern effects belong in the WebGL compositor documented in
+`docs/linuxdoom-browser-port.md`. If a renderer change is truly required,
+stop and explain why the compositor cannot do it.
