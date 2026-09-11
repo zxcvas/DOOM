@@ -1,0 +1,14 @@
+# Never commit game data (see AGENTS.md). IWADs/PWADs are user-supplied.
+*.wad
+*.WAD
+*.lmp
+
+# WebAssembly build output (regenerate with web/build.sh).
+web/dist/
+
+# Emscripten SDK, if cloned into the tree.
+emsdk/
+
+# Editor/OS noise.
+*.o
+*~

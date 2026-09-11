@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Linux Doom 1.10 — Browser Port</title>
+<style>
+  :root {
+    --bg: #0b0b0d;
+    --panel: #16161a;
+    --border: #2a2a31;
+    --text: #e6e6e6;
+    --muted: #9a9aa2;
+    --accent: #b21f1f;
+    --accent2: #d98324;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: radial-gradient(1200px 700px at 50% -10%, #1a1206 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  header {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 18px; margin: 0; letter-spacing: 0.5px; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  main {
+    max-width: 1100px; margin: 0 auto; padding: 20px;
+    display: grid; grid-template-columns: 1fr 300px; gap: 20px;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .stage {
+    background: #000; border: 1px solid var(--border); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 480px; position: relative; overflow: hidden;
+  }
+  canvas#screen {
+    image-rendering: pixelated; image-rendering: crisp-edges;
+    background: #000; display: block;
+  }
+  #dropHint {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    color: var(--muted); text-align: center; padding: 24px; pointer-events: none;
+  }
+  #dropHint strong { color: var(--text); font-size: 16px; }
+  .stage.dragover { outline: 2px dashed var(--accent2); outline-offset: -8px; }
+
+  aside {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; height: fit-content;
+  }
+  aside h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--muted); margin: 0 0 10px; }
+  .row { margin: 12px 0; }
+  label { display: block; font-size: 13px; margin-bottom: 6px; color: var(--muted); }
+  button, select, input[type=file] { font: inherit; }
+  .btn {
+    display: inline-block; background: var(--accent); color: #fff; border: 0;
+    padding: 9px 14px; border-radius: 7px; cursor: pointer; font-weight: 600;
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  select {
+    width: 100%; padding: 8px; background: #0e0e11; color: var(--text);
+    border: 1px solid var(--border); border-radius: 7px;
+  }
+  .file {
+    display: block; width: 100%; padding: 10px; text-align: center;
+    border: 1px dashed var(--border); border-radius: 7px; cursor: pointer;
+    color: var(--muted); background: #0e0e11;
+  }
+  .file:hover { border-color: var(--accent2); color: var(--text); }
+  input[type=file] { display: none; }
+  .status {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px;
+    color: var(--muted); white-space: pre-wrap; margin-top: 8px;
+    max-height: 160px; overflow: auto; border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+  .keys { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .keys b { color: var(--text); }
+  .legal { font-size: 11px; color: var(--muted); margin-top: 14px; line-height: 1.5; }
+  a { color: var(--accent2); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Linux Doom 1.10</h1>
+  <span class="sub">software-rendered · 320×200 paletted · WebAssembly</span>
+</header>
+
+<main>
+  <section class="stage" id="stage">
+    <canvas id="screen" width="960" height="720"></canvas>
+    <div id="dropHint">
+      <strong>Drop an IWAD here to play</strong>
+      <span>doom.wad · doom2.wad · doom1.wad (shareware) · freedoom1.wad …</span>
+      <span>No game data is bundled — supply a WAD you own or a freely licensed one.</span>
+    </div>
+  </section>
+
+  <aside>
+    <h2>Load</h2>
+    <div class="row">
+      <label class="file" for="wadInput" id="fileLabel">Choose IWAD file…</label>
+      <input type="file" id="wadInput" accept=".wad,.WAD" />
+    </div>
+    <div class="row">
+      <label for="iwadType">IWAD interpretation</label>
+      <select id="iwadType">
+        <option value="auto">Auto-detect from filename</option>
+        <option value="doom.wad">Ultimate/Registered Doom (doom.wad)</option>
+        <option value="doom1.wad">Doom shareware (doom1.wad)</option>
+        <option value="doom2.wad">Doom II (doom2.wad)</option>
+        <option value="tnt.wad">TNT: Evilution (tnt.wad)</option>
+        <option value="plutonia.wad">Plutonia (plutonia.wad)</option>
+      </select>
+    </div>
+    <div class="row">
+      <button class="btn" id="startBtn" disabled>Start</button>
+    </div>
+
+    <h2 style="margin-top:20px">Display</h2>
+    <div class="row">
+      <label for="scaleSel">Integer scale</label>
+      <select id="scaleSel">
+        <option value="0">Fit stage</option>
+        <option value="2">2×</option>
+        <option value="3" selected>3×</option>
+        <option value="4">4×</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="aspectSel">Aspect</label>
+      <select id="aspectSel">
+        <option value="43" selected>4:3 (authentic)</option>
+        <option value="square">Square pixels (1:1)</option>
+      </select>
+    </div>
+
+    <h2 style="margin-top:20px">Controls</h2>
+    <div class="keys">
+      <b>Arrows</b> move/turn · <b>Ctrl</b> fire · <b>Space</b> use<br/>
+      <b>Shift</b> run · <b>Alt+Arrow</b> strafe · <b>1–7</b> weapons<br/>
+      <b>Esc</b> menu · <b>Enter</b> select · <b>Tab</b> map
+    </div>
+
+    <div class="status" id="status">Loading WebAssembly…</div>
+
+    <div class="legal">
+      Engine: id Software Linux Doom 1.10 (GPL-2.0). Game assets are not
+      included. Do not load or distribute commercial WADs you do not own.
+    </div>
+  </aside>
+</main>
+
+<script src="dist/doom.js"></script>
+<script src="compositor.js"></script>
+<script src="input.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

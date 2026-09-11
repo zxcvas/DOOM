@@ -31,7 +31,15 @@
 #ifdef __cplusplus
 typedef bool boolean;
 #else
+// In C23 'true'/'false' are keywords, and <stdbool.h> (pulled in by some
+// toolchain headers, e.g. Emscripten's) defines them as macros. Either way the
+// historical 'enum {false, true}' no longer compiles, so fall back to a plain
+// int boolean that preserves the original (non-truncating) value semantics.
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ > 201710L) || defined(__bool_true_false_are_defined) || defined(true) || defined(false)
+typedef int boolean;
+#else
 typedef enum {false, true} boolean;
+#endif
 #endif
 typedef unsigned char byte;
 #endif
