@@ -99,8 +99,13 @@
 
       DoomInput.attach((down, key) => Module._Doom_PostKey(down, key));
 
+      // Optional engine args, e.g. ?args=-warp 1 1 -skill 2
+      const argStr = new URLSearchParams(location.search).get("args");
+      const args = argStr ? argStr.trim().split(/\s+/) : [];
+      if (args.length) log("Engine args: " + args.join(" "));
+
       try {
-        Module.callMain([]);
+        Module.callMain(args);
       } catch (e) {
         // ExitStatus from a clean quit is fine; anything else we report.
         if (!(e && e.name === "ExitStatus")) log("D_DoomMain error: " + e);
@@ -177,14 +182,6 @@
   setStatus("Loading WebAssembly…");
   createDoomModule({
     noInitialRun: true,
-    preRun: [
-      function () {
-        // The engine's IWAD search uses $DOOMWADDIR (default ".") and needs
-        // $HOME for its config file. Point both at the MEMFS root.
-        this.ENV.HOME = "/";
-        this.ENV.DOOMWADDIR = "/";
-      },
-    ],
     print: (t) => log(t),
     printErr: (t) => log(t),
     onDoomError: (msg) => log("I_Error: " + msg),
@@ -195,6 +192,11 @@
   })
     .then((mod) => {
       Module = mod;
+      // The engine's IWAD search uses $DOOMWADDIR (default ".") and needs $HOME
+      // for its config file. Point both at the MEMFS root. Set before callMain
+      // so the first getenv() (in D_DoomMain) picks them up.
+      Module.ENV.HOME = "/";
+      Module.ENV.DOOMWADDIR = "/";
       setStatus("WebAssembly ready. Choose an IWAD to begin.");
       if (selectedFile) startBtn.disabled = false;
       const wadUrl = new URLSearchParams(location.search).get("wad");
