@@ -1,0 +1,22 @@
+{
+  "name": "Linux Doom — WASM browser port",
+  "user": "ubuntu",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "install": "bash web/build.sh",
+  "terminals": [
+    {
+      "name": "web-server",
+      "command": "cd web && python3 -m http.server 8000",
+      "description": "Serves the Doom WASM page at http://localhost:8000. Open it and pick an IWAD you own, or append ?wad=<url-to-your-wad> to auto-load one. No game data is bundled."
+    }
+  ],
+  "ports": [
+    {
+      "name": "web",
+      "port": 8000
+    }
+  ]
+}
