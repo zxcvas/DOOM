@@ -77,6 +77,10 @@ static const char rcsid[] = "$Id: d_main.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 
 #include "d_main.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -186,6 +190,15 @@ void D_ProcessEvents (void)
 
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t     wipegamestate = GS_DEMOSCREEN;
+
+#ifdef __EMSCRIPTEN__
+// Screen wipes must not busy-wait on I_GetTime in the browser or the tab
+// freezes. Instead we record that a wipe is in progress and advance it one
+// slice per D_DoomFrame call (see D_AdvanceWipe / D_DoomFrame below).
+static boolean	wiping = false;
+static int	wipe_starttime;
+#endif
+
 extern  boolean setsizeneeded;
 extern  int             showMessages;
 void R_ExecuteSetViewSize (void);
@@ -326,6 +339,13 @@ void D_Display (void)
     // wipe update
     wipe_EndScreen(0, 0, SCREENWIDTH, SCREENHEIGHT);
 
+#ifdef __EMSCRIPTEN__
+    // Kick off a sliced wipe; D_DoomFrame advances it without blocking.
+    wipe_starttime = I_GetTime () - 1;
+    wiping = true;
+    (void) nowtime; (void) tics; (void) done; (void) wipestart;
+    return;
+#else
     wipestart = I_GetTime () - 1;
 
     do
@@ -342,6 +362,7 @@ void D_Display (void)
 	M_Drawer ();                            // menu is drawn even on top of wipes
 	I_FinishUpdate ();                      // page flip or blit buffer
     } while (!done);
+#endif
 }
 
 
@@ -350,6 +371,99 @@ void D_Display (void)
 //  D_DoomLoop
 //
 extern  boolean         demorecording;
+
+#ifdef __EMSCRIPTEN__
+
+//
+// Browser build: no blocking while(1). D_DoomLoop performs one-time setup and
+// returns; the JS host then drives D_DoomFrame once per requestAnimationFrame.
+// See docs/linuxdoom-browser-port.md sections 4, 8, 11.
+//
+
+// Advance an in-progress screen wipe by one time slice, without busy-waiting.
+static void D_AdvanceWipe (void)
+{
+    int		nowtime;
+    int		tics;
+    boolean	done;
+
+    nowtime = I_GetTime ();
+    tics = nowtime - wipe_starttime;
+    if (!tics)
+    {
+	// Not enough time has elapsed for a wipe step yet; try next frame.
+	return;
+    }
+    wipe_starttime = nowtime;
+
+    done = wipe_ScreenWipe (wipe_Melt, 0, 0, SCREENWIDTH, SCREENHEIGHT, tics);
+    I_UpdateNoBlit ();
+    M_Drawer ();		// menu is drawn even on top of wipes
+    I_FinishUpdate ();		// present
+
+    if (done)
+	wiping = false;
+}
+
+// One frame of the game, called from JS requestAnimationFrame.
+EMSCRIPTEN_KEEPALIVE
+void D_DoomFrame (void)
+{
+    // While a wipe is melting, only advance the wipe (mirrors the original,
+    // which blocked here and did not run tics).
+    if (wiping)
+    {
+	D_AdvanceWipe ();
+	return;
+    }
+
+    // frame syncronous IO operations
+    I_StartFrame ();
+
+    // process one or more tics
+    if (singletics)
+    {
+	I_StartTic ();
+	D_ProcessEvents ();
+	G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
+	if (advancedemo)
+	    D_DoAdvanceDemo ();
+	M_Ticker ();
+	G_Ticker ();
+	gametic++;
+	maketic++;
+    }
+    else
+    {
+	TryRunTics (); // will run at least one tic
+    }
+
+    S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
+
+    // Update display, next frame, with current state.
+    D_Display ();
+}
+
+void D_DoomLoop (void)
+{
+    if (demorecording)
+	G_BeginRecording ();
+
+    if (M_CheckParm ("-debugfile"))
+    {
+	char    filename[20];
+	sprintf (filename,"debug%i.txt",consoleplayer);
+	printf ("debug output to: %s\n",filename);
+	debugfile = fopen (filename,"w");
+    }
+
+    I_InitGraphics ();
+
+    // Return to the caller (D_DoomMain -> main). The runtime stays alive and
+    // the JS host calls D_DoomFrame from requestAnimationFrame.
+}
+
+#else
 
 void D_DoomLoop (void)
 {
@@ -405,6 +519,8 @@ void D_DoomLoop (void)
 #endif
     }
 }
+
+#endif
 
 
 

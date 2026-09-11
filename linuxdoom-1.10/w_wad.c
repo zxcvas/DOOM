@@ -66,10 +66,14 @@ void**			lumpcache;
 
 #define strcmpi	strcasecmp
 
+#ifndef __EMSCRIPTEN__
+// Emscripten's libc compat headers already declare strupr(char*) -> char*,
+// which conflicts with this void-returning definition. Use the libc one there.
 void strupr (char* s)
 {
     while (*s) { *s = toupper(*s); s++; }
 }
+#endif
 
 int filelength (int handle) 
 { 
