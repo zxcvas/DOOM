@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>
+    /* Resolve relative assets at site root and under /<repo>/ project Pages.
+       file:// is left alone so opening this file locally still loads styles.css. */
+    (function () {
+      if (location.protocol === "file:") return;
+      var path = location.pathname;
+      if (/\.html?$/i.test(path)) {
+        path = path.replace(/[^/]+$/, "");
+      } else if (path && path.charAt(path.length - 1) !== "/") {
+        path += "/";
+      }
+      document.write('<base href="' + path + '">');
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FOON — classic Doom pixels in the browser. Linux Doom 1.10 software look, modern CRT compositor. Bring your own IWAD.">
+  <title>FOON — Doom pixels in the browser</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="wordmark" href="#top">FOON</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#about">About</a>
+      <a href="#pixels">Pixels</a>
+      <a href="#iwad">IWAD</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#play">Play</a>
+      <a href="#source">Source</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <p class="eyebrow">Linux Doom 1.10 · browser host</p>
+      <h1>FOON</h1>
+      <p class="lede">
+        Classic Doom pixels in the browser — the original 320×200 software look,
+        presented through a modern CRT compositor.
+      </p>
+
+      <figure class="hero-crt" aria-labelledby="hero-crt-caption">
+        <div class="bezel">
+          <svg class="framebuffer" viewBox="0 0 320 200" role="img" aria-label="Geometric placeholder of a 320 by 200 paletted framebuffer: a corridor of indexed color blocks with a status bar strip.">
+            <rect width="320" height="200" fill="#101210"/>
+            <rect width="320" height="92" fill="#1a1814"/>
+            <polygon points="0,92 128,72 192,72 320,92 320,168 192,148 128,148 0,168" fill="#3a2a1c"/>
+            <polygon points="128,72 192,72 192,148 128,148" fill="#2a2218"/>
+            <rect x="148" y="96" width="24" height="52" fill="#6b3a12"/>
+            <rect x="154" y="112" width="6" height="10" fill="#e8c04a"/>
+            <rect x="0" y="168" width="320" height="32" fill="#141210"/>
+            <rect x="8" y="174" width="36" height="20" fill="#5a2a1a"/>
+            <rect x="52" y="176" width="80" height="6" fill="#3d5a2a"/>
+            <rect x="52" y="186" width="56" height="6" fill="#8a3a1a"/>
+            <rect x="240" y="174" width="72" height="20" fill="#2a2a22"/>
+            <rect x="248" y="178" width="16" height="12" fill="#c44"/>
+            <rect x="268" y="178" width="16" height="12" fill="#4a4"/>
+            <rect x="288" y="178" width="16" height="12" fill="#cc4"/>
+          </svg>
+          <div class="scanlines" aria-hidden="true"></div>
+        </div>
+        <figcaption id="hero-crt-caption">
+          320×200 · 8-bit indices · PLAYPAL · art placeholder
+        </figcaption>
+      </figure>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/zxcvas/DOOM">View source on GitHub</a>
+        <a class="btn btn-ghost" href="#about">How it works</a>
+        <a class="btn btn-disabled" role="link" aria-disabled="true" tabindex="-1">Play — Coming soon</a>
+      </div>
+    </section>
+
+    <section id="about">
+      <h2>What it is</h2>
+      <p>
+        FOON is a public host for the 23 December 1997 Linux Doom 1.10 source.
+        The portable C core — simulation, WAD loader, UI, and the original
+        software renderer — stays C. The later compile path is
+        <strong>C → WebAssembly</strong>.
+      </p>
+      <p>
+        Pixels stay authentic because colormap lighting, fuzz shadows, palette
+        flashes, and patch drawing remain CPU software. The renderer still
+        writes a 320×200 8-bit paletted framebuffer
+        (<code>screens[0]</code> + <code>PLAYPAL</code>). We do not rewrite
+        <code>r_*.c</code> into a GPU world renderer.
+      </p>
+    </section>
+
+    <section id="pixels">
+      <h2>Indices on the CPU. RGB on the GPU.</h2>
+      <p>
+        The compositor is the only modern layer. Palette indices stay on the
+        CPU. After that buffer is complete, the GPU expands the current
+        <code>PLAYPAL</code> LUT to RGB, integer-upscales with nearest
+        sampling (4:3 present, not square pixels), then runs CRT, bloom, and
+        color grade.
+      </p>
+      <ol class="pipeline">
+        <li><span>0</span> 320×200 R8 indices</li>
+        <li><span>1</span> Palette expand</li>
+        <li><span>2</span> Integer upscale</li>
+        <li><span>3</span> CRT / bloom / grade</li>
+      </ol>
+    </section>
+
+    <section id="iwad">
+      <h2>Bring your own IWAD</h2>
+      <p>
+        Game data is not in this repository and never will be. FOON will not
+        host, fetch, or ship commercial WAD files. You supply an IWAD you own
+        — <code>doom.wad</code>, <code>doom2.wad</code>, shareware
+        <code>doom1.wad</code>, or a freely licensed replacement.
+      </p>
+      <p class="callout">No IWAD, no game. Bring your own.</p>
+    </section>
+
+    <section id="roadmap">
+      <h2>Roadmap</h2>
+      <ol class="phases">
+        <li>
+          <strong>Phase 0 — Host skeleton</strong>
+          Emscripten toolchain, play-shell page, IWAD picker, stub <code>I_*</code>.
+        </li>
+        <li>
+          <strong>Phase 1 — Visible pixels</strong>
+          Title screen and E1M1 from the software buffer; non-blocking loop.
+        </li>
+        <li>
+          <strong>Phase 2 — Real compositor</strong>
+          WebGL present: index texture + palette LUT, integer upscale, 4:3.
+        </li>
+        <li>
+          <strong>Phase 3 — Audio &amp; input</strong>
+          Web Audio SFX, pointer-lock mouse, optional gamepad.
+        </li>
+        <li>
+          <strong>Phase 4 — Modern effects</strong>
+          CRT, bloom, color grade as toggles; A/B against palette-only.
+        </li>
+        <li>
+          <strong>Phase 5 — Mods <em>(optional)</em></strong>
+          One gameplay slice or PWAD loader UI — not a renderer rewrite.
+        </li>
+      </ol>
+    </section>
+
+    <section id="play">
+      <h2>Play</h2>
+      <p>
+        The in-browser play shell is not in this drop. When it lands it will
+        sit beside this marketing site and refuse to run without a
+        user-supplied IWAD.
+      </p>
+      <p>
+        <a class="btn btn-disabled" role="link" aria-disabled="true" tabindex="-1">Play — Coming soon</a>
+      </p>
+    </section>
+
+    <section id="source">
+      <h2>Source</h2>
+      <p>
+        This project is on GitHub:
+        <a href="https://github.com/zxcvas/DOOM">github.com/zxcvas/DOOM</a>.
+        Engine source is <strong>GPL-2.0</strong>. You still need real Doom
+        data you own; the license covers the code, not commercial IWADs.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>FOON · Linux Doom 1.10 browser port · GPL-2.0</p>
+  </footer>
+</body>
+</html>
