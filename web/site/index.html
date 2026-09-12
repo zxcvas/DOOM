@@ -21,8 +21,8 @@
         <span>FOON</span>
       </a>
       <nav aria-label="Sections">
-        <a href="#what">What</a>
-        <a href="#compositor">Compositor</a>
+        <a href="#about">About</a>
+        <a href="#pixels">Pixels</a>
         <a href="#iwad">IWAD</a>
         <a href="#roadmap">Roadmap</a>
         <a href="#play">Play</a>
@@ -40,6 +40,17 @@
           through a <strong>WebGL CRT compositor</strong>. You supply the IWAD.
           Commercial WADs are never committed or hosted.
         </p>
+        <figure class="hero-art">
+          <img
+            src="assets/crt-screenshot-mock.png"
+            width="1152"
+            height="864"
+            alt="Original FOON CRT mock: a 320×200 geometric corridor and status strip on a phosphor screen, with FOON in amber pixels. Not a game screenshot."
+          />
+          <figcaption>
+            320×200 authored mock · CRT present · not an IWAD capture
+          </figcaption>
+        </figure>
         <div class="cta-row">
           <button class="btn btn-play" type="button" disabled>
             Play <span class="hint">offline — not shipped</span>
@@ -48,7 +59,7 @@
         </div>
       </section>
 
-      <section id="what">
+      <section id="about">
         <h2>What it is</h2>
         <p>
           FOON is a browser port of the 23 December 1997 Linux Doom 1.10
@@ -73,9 +84,18 @@
             <span>User-supplied IWAD only. No commercial WAD in this tree.</span>
           </li>
         </ul>
+        <figure class="diagram-art">
+          <img
+            src="assets/architecture-diagram.png"
+            width="1400"
+            height="780"
+            alt="FOON PIXEL PIPELINE: Linux Doom 1.10 software renderer to 320×200 R8 indices, authored LUT expand, integer 4:3 upscale, then WebGL CRT compositor."
+          />
+          <figcaption>FOON PIXEL PIPELINE — CPU indices, GPU RGB and CRT after expand.</figcaption>
+        </figure>
       </section>
 
-      <section id="compositor">
+      <section id="pixels">
         <h2>Pixel compositor</h2>
         <p>
           Indices stay on the CPU. RGB and effects happen after palette expand.
@@ -92,6 +112,26 @@
           The compositor must not rewrite walls, floors, or sprites. Effects are
           a present pass, not a new renderer.
         </p>
+        <figure class="palette-art">
+          <img
+            src="assets/palette-strip.png"
+            width="1280"
+            height="280"
+            alt="FOON authored 32-color marketing palette strip in amber, phosphor, rust, and tan. Not an IWAD PLAYPAL dump."
+          />
+          <figcaption>
+            Authored marketing palette — not IWAD <code>PLAYPAL</code>
+          </figcaption>
+        </figure>
+        <figure class="hero-art pixels-crt">
+          <img
+            src="assets/crt-screenshot-mock.png"
+            width="1152"
+            height="864"
+            alt="Same FOON CRT mock as the hero: original geometric framebuffer in a bezel, not commercial game art."
+          />
+          <figcaption>CRT mock again at the pixel desk — placeholder for live <code>screens[0]</code>.</figcaption>
+        </figure>
       </section>
 
       <section id="iwad">

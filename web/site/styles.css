@@ -180,6 +180,52 @@ h2 {
   color: var(--ink);
 }
 
+figure {
+  margin: 1.4rem 0 0;
+  padding: 0;
+}
+
+figcaption {
+  margin: 0.65rem 0 0;
+  color: var(--ink-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hero-art,
+.diagram-art,
+.palette-art {
+  background: #0a0906;
+  border: 1px solid var(--line);
+  padding: 0.7rem 0.7rem 0.85rem;
+}
+
+.hero .hero-art {
+  max-width: 36rem;
+  margin: 0.2rem auto 1.6rem;
+}
+
+.hero-art img,
+.diagram-art img,
+.palette-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero-art img {
+  image-rendering: pixelated;
+}
+
+.palette-art {
+  padding: 0.5rem 0.5rem 0.75rem;
+}
+
+.pixels-crt {
+  max-width: 36rem;
+}
+
 .cta-row,
 .play-panel {
   display: flex;
