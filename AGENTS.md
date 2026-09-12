@@ -1,7 +1,8 @@
 # Agent instructions
 
-This repository is the 1997 Linux Doom 1.10 source (GPL-2.0). Game IWAD data
-is **not** in the tree and must never be committed.
+This repository is the 1997 Linux Doom 1.10 source (GPL-2.0), branded **FOON**
+for the browser port. Game IWAD data is **not** in the tree and must never be
+committed.
 
 Read `docs/linuxdoom-browser-port.md` before changing behavior.
 
@@ -13,6 +14,11 @@ Read `docs/linuxdoom-browser-port.md` before changing behavior.
 - Do not host or add commercial WAD files.
 - Do not reintroduce a blocking `while (1)` game loop or busy-wait wipes in
   the browser build.
+
+## Public site
+
+- Marketing / GitHub Pages site lives in `web/site/` (static HTML/CSS).
+- Do not put commercial WADs or the WASM play host in `web/site/`.
 
 ## Cursor Cloud specific instructions
 

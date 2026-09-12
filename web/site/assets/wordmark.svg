@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="FOON">
+  <rect width="32" height="32" fill="#070705"/>
+  <rect x="2" y="2" width="28" height="28" fill="none" stroke="#ffb000" stroke-width="2"/>
+  <rect x="8" y="8" width="16" height="3" fill="#ffb000"/>
+  <rect x="8" y="8" width="3" height="16" fill="#ffb000"/>
+  <rect x="8" y="15" width="11" height="3" fill="#ffb000"/>
+</svg>
