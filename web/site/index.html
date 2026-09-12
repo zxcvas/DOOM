@@ -33,9 +33,7 @@
     <main>
       <section id="hero" class="hero">
         <p class="eyebrow">// SIGNAL 320×200 · PALETTED · USER IWAD</p>
-        <h1>
-          <span class="glitch" data-text="FOON">FOON</span>
-        </h1>
+        <h1>FOON</h1>
         <p class="pitch">
           Classic Doom pixels in the browser. The 1997 Linux Doom software
           renderer, compiled <strong>C&nbsp;→&nbsp;WASM</strong>, then shown
@@ -59,20 +57,20 @@
         </p>
         <ul class="spec">
           <li>
-            <span>Engine</span>
-            Original software renderer (<code>r_*.c</code>) — source of every pixel
+            <span class="k">Engine</span>
+            <span>Original software renderer (<code>r_*.c</code>) — source of every pixel</span>
           </li>
           <li>
-            <span>Host</span>
-            Emscripten / WebAssembly, <code>requestAnimationFrame</code> loop
+            <span class="k">Host</span>
+            <span>Emscripten / WebAssembly, <code>requestAnimationFrame</code> loop</span>
           </li>
           <li>
-            <span>Present</span>
-            <code>screens[0]</code> + <code>PLAYPAL</code> → GPU compositor
+            <span class="k">Present</span>
+            <span><code>screens[0]</code> + <code>PLAYPAL</code> → GPU compositor</span>
           </li>
           <li>
-            <span>Data</span>
-            User-supplied IWAD only. No commercial WAD in this tree.
+            <span class="k">Data</span>
+            <span>User-supplied IWAD only. No commercial WAD in this tree.</span>
           </li>
         </ul>
       </section>
@@ -104,17 +102,19 @@
         </p>
         <ul class="spec">
           <li>
-            <span>Allowed</span>
-            A WAD you drop in from disk when Play ships
+            <span class="k">Allowed</span>
+            <span>A WAD you drop in from disk when Play ships</span>
           </li>
           <li>
-            <span>Forbidden</span>
-            Bundling <code>doom.wad</code>, <code>doom2.wad</code>, or any
-            commercial IWAD in git or Pages
+            <span class="k">Forbidden</span>
+            <span>
+              Bundling <code>doom.wad</code>, <code>doom2.wad</code>, or any
+              commercial IWAD in git or Pages
+            </span>
           </li>
           <li>
-            <span>Why</span>
-            Source is GPL-2.0. Assets are not.
+            <span class="k">Why</span>
+            <span>Source is GPL-2.0. Assets are not.</span>
           </li>
         </ul>
       </section>

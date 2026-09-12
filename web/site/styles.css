@@ -54,12 +54,12 @@ body::after {
   z-index: 7;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.18) 0,
-    rgba(0, 0, 0, 0.18) 1px,
+    rgba(0, 0, 0, 0.14) 0,
+    rgba(0, 0, 0, 0.14) 1px,
     transparent 1px,
     transparent 3px
   );
-  opacity: 0.35;
+  opacity: 0.22;
 }
 
 .crt-frame {
@@ -137,6 +137,7 @@ main {
 section {
   margin: 0 0 3.2rem;
   padding: 1.4rem 1.35rem 1.5rem;
+  scroll-margin-top: 5.5rem;
   background: var(--bg-panel);
   border: 1px solid var(--line);
   box-shadow: 0 0 0 1px rgba(255, 176, 0, 0.04), 0 18px 40px rgba(0, 0, 0, 0.28);
@@ -171,33 +172,6 @@ h2 {
   font-size: clamp(3.4rem, 14vw, 7rem);
   letter-spacing: 0.22em;
   line-height: 1;
-}
-
-.glitch {
-  position: relative;
-  display: inline-block;
-}
-
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.glitch::before {
-  color: #ff6a3a;
-  transform: translate(-2px, 1px);
-  opacity: 0.45;
-  mix-blend-mode: screen;
-}
-
-.glitch::after {
-  color: var(--phosphor);
-  transform: translate(2px, -1px);
-  opacity: 0.28;
-  mix-blend-mode: screen;
 }
 
 .pitch {
@@ -285,7 +259,7 @@ h2 {
   grid-template-columns: 1fr;
 }
 
-.spec span,
+.spec .k,
 .roadmap strong {
   color: var(--amber);
   letter-spacing: 0.08em;
