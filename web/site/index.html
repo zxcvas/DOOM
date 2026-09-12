@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FOON — classic Doom pixels in the browser</title>
+    <meta
+      name="description"
+      content="FOON: classic Doom pixels in the browser. Linux Doom 1.10 compiled C→WASM, presented through a WebGL CRT compositor. User-supplied IWAD only."
+    />
+    <link rel="icon" href="assets/wordmark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="crt-frame" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#hero">
+        <img src="assets/wordmark.svg" alt="" width="36" height="36" />
+        <span>FOON</span>
+      </a>
+      <nav aria-label="Sections">
+        <a href="#what">What</a>
+        <a href="#compositor">Compositor</a>
+        <a href="#iwad">IWAD</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#play">Play</a>
+        <a href="#github">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="hero" class="hero">
+        <p class="eyebrow">// SIGNAL 320×200 · PALETTED · USER IWAD</p>
+        <h1>
+          <span class="glitch" data-text="FOON">FOON</span>
+        </h1>
+        <p class="pitch">
+          Classic Doom pixels in the browser. The 1997 Linux Doom software
+          renderer, compiled <strong>C&nbsp;→&nbsp;WASM</strong>, then shown
+          through a <strong>WebGL CRT compositor</strong>. You supply the IWAD.
+          Commercial WADs are never committed or hosted.
+        </p>
+        <div class="cta-row">
+          <button class="btn btn-play" type="button" disabled>
+            Play <span class="hint">offline — not shipped</span>
+          </button>
+          <a class="btn btn-ghost" href="#github">Source on GitHub</a>
+        </div>
+      </section>
+
+      <section id="what">
+        <h2>What it is</h2>
+        <p>
+          FOON is a browser port of the 23 December 1997 Linux Doom 1.10
+          source (GPL-2.0). The game still thinks it is drawing an 8-bit
+          <code>320×200</code> framebuffer. The page just hosts that buffer.
+        </p>
+        <ul class="spec">
+          <li>
+            <span>Engine</span>
+            Original software renderer (<code>r_*.c</code>) — source of every pixel
+          </li>
+          <li>
+            <span>Host</span>
+            Emscripten / WebAssembly, <code>requestAnimationFrame</code> loop
+          </li>
+          <li>
+            <span>Present</span>
+            <code>screens[0]</code> + <code>PLAYPAL</code> → GPU compositor
+          </li>
+          <li>
+            <span>Data</span>
+            User-supplied IWAD only. No commercial WAD in this tree.
+          </li>
+        </ul>
+      </section>
+
+      <section id="compositor">
+        <h2>Pixel compositor</h2>
+        <p>
+          Indices stay on the CPU. RGB and effects happen after palette expand.
+          That is how FOON keeps the original look — colormap lighting, fuzz,
+          pain flashes — while adding a modern CRT stack.
+        </p>
+        <ol class="pipeline">
+          <li>Upload 320×200 R8 indices + current PLAYPAL LUT</li>
+          <li>Palette expand (nearest) → RGB</li>
+          <li>Integer upscale, 4:3 present</li>
+          <li>Optional bloom, CRT, color grade at display resolution</li>
+        </ol>
+        <p class="note">
+          The compositor must not rewrite walls, floors, or sprites. Effects are
+          a present pass, not a new renderer.
+        </p>
+      </section>
+
+      <section id="iwad">
+        <h2>IWAD policy</h2>
+        <p>
+          The engine will not start without a WAD you own (or a freely licensed
+          IWAD). FOON never fetches, hosts, or commits commercial game data.
+        </p>
+        <ul class="spec">
+          <li>
+            <span>Allowed</span>
+            A WAD you drop in from disk when Play ships
+          </li>
+          <li>
+            <span>Forbidden</span>
+            Bundling <code>doom.wad</code>, <code>doom2.wad</code>, or any
+            commercial IWAD in git or Pages
+          </li>
+          <li>
+            <span>Why</span>
+            Source is GPL-2.0. Assets are not.
+          </li>
+        </ul>
+      </section>
+
+      <section id="roadmap">
+        <h2>Roadmap</h2>
+        <ol class="roadmap">
+          <li>
+            <strong>Site shell</strong>
+            This page — public IA and Pages deploy from <code>web/site/</code>
+          </li>
+          <li>
+            <strong>Host skeleton</strong>
+            WASM boot, IWAD file picker, stub <code>I_*</code>
+          </li>
+          <li>
+            <strong>Visible pixels</strong>
+            Title / menu / E1M1 from <code>screens[0]</code>
+          </li>
+          <li>
+            <strong>WebGL compositor</strong>
+            LUT expand, integer scale, CRT toggles
+          </li>
+          <li>
+            <strong>Audio + input</strong>
+            Web Audio SFX, pointer lock, gamepad
+          </li>
+        </ol>
+      </section>
+
+      <section id="play">
+        <h2>Play</h2>
+        <p>
+          The in-browser play host is not in this drop. The control below is a
+          placeholder so the public IA is complete before WASM lands.
+        </p>
+        <div class="play-panel">
+          <p class="play-status">NO CARTRIDGE · AWAITING WASM HOST</p>
+          <button class="btn btn-play" type="button" disabled title="WASM play host is not shipped yet">
+            Play FOON
+          </button>
+          <p class="note">
+            When it ships, Play will ask you to choose a local IWAD. Nothing
+            will be uploaded to a server from this static site.
+          </p>
+        </div>
+      </section>
+
+      <section id="github">
+        <h2>GitHub</h2>
+        <p>
+          Source, agents, and architecture notes live in the repository.
+          The GitHub name may still read DOOM; the product is <strong>FOON</strong>.
+        </p>
+        <p>
+          <a class="btn btn-ghost" href="https://github.com/zxcvas/DOOM">
+            github.com/zxcvas/DOOM
+          </a>
+        </p>
+        <p class="note">
+          GPL-2.0. Carmack’s original release note is still in
+          <code>README.TXT</code>. Port plan:
+          <code>docs/linuxdoom-browser-port.md</code>.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>FOON · 320×200 paletted · user IWAD only</p>
+    </footer>
+  </body>
+</html>

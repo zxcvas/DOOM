@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="FOON">
+  <rect width="32" height="32" fill="#070705"/>
+  <rect x="2" y="2" width="28" height="28" fill="none" stroke="#ffb000" stroke-width="2"/>
+  <path fill="#ffb000" d="M7 9h8v2H9v3h5v2H9v7H7V9zm10 0h3l5 14h-3l-1-3h-5l-1 3h-3l5-14zm1.6 9h2.8L17.5 12h-.2L18.6 18z"/>
+</svg>

@@ -334,8 +334,12 @@ Leave out `sndserv/`, `sersrc/`, `ipx/`.
 
 ### Recommended module split
 
+Public marketing site (GitHub Pages) is `web/site/` — static IA only, not the
+play host.
+
 ```
 web/
+  site/                   # public FOON landing page (Pages artifact)
   index.html              # drop-zone for IWAD, canvas, settings
   compositor.js / .ts     # WebGL present + post FX
   input.js                # keymap → D_PostEvent via cwrap
