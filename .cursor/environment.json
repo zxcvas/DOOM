@@ -1,0 +1,17 @@
+{
+  "name": "Linux Doom — browser/WASM",
+  "install": "bash web/env-smoke/install.sh",
+  "terminals": [
+    {
+      "name": "web-server",
+      "command": "cd web && python3 -m http.server 8000 --bind 0.0.0.0",
+      "description": "Static server for the web/ browser shell and the Emscripten WASM build (http://localhost:8000)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "web",
+      "port": 8000
+    }
+  ]
+}
