@@ -22,4 +22,18 @@ Read `docs/linuxdoom-browser-port.md` before changing behavior.
 - Specialist subagents live in `.cursor/agents/`. Prefer `/wasm-platform`,
   `/pixel-compositor`, and `/browser-verifier` over a single mixed change.
 - If an IWAD is needed for a runtime test, use a user-supplied path or skip
-  the playable test and report that it was not run.
+ the playable test and report that it was not run.
+
+## Development environment (browser/WASM)
+
+- `.cursor/environment.json` provisions the Emscripten toolchain and serves
+ the `web/` shell. Its `install` runs `web/env-smoke/install.sh` (installs
+ `emsdk` if missing, builds, and headlessly verifies). A `web-server`
+ terminal serves `web/` on port 8000.
+- Locally, activate the toolchain with `source "$HOME/emsdk/emsdk_env.sh"`.
+- Build the WASM module: `bash web/env-smoke/build.sh` (output in `web/dist/`,
+ which is git-ignored). Headless check: `node web/env-smoke/node_check.mjs`.
+- `web/env-smoke/` is an environment smoke test only: it compiles the real,
+ unmodified engine math (`m_fixed.c`, `tables.c`, `m_random.c`) to WASM to
+ prove the toolchain. It is not the game and must not stand in for the port
+ or the software renderer.
